@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import datetime
@@ -78,21 +78,21 @@ def run(stdscr):
 
         lines = []
 
-        day_menus = inspira_site.split("et_pb_module el_restro_menu el_restro_menu_")
+        day_menus = inspira_site.split("lunchmeny_wrapper")
         selected_day_menu = day_menus[selected_day+1]
-        day_title = day_menus[selected_day].split("""<div class="et_pb_text_inner"><h3>""")[-1].split("</h3>")[0]
+        day_title = day_menus[selected_day].split("""<h3 class="elementor-heading-title elementor-size-default">""")[-1].split("</h3>")[0]
         lines.append((day_title, curses.color_pair(2)|curses.A_BOLD))
         lines.append(("", None))
 
-        dishes = selected_day_menu.split("""<h4 class="el-drm-menu-item-name">""")
+        dishes = selected_day_menu.split("""<div class="lunchmeny_container">""")
 
         for dish in dishes[1:]:
             try:
-                name = dish.split("</h4>")[0]
+                name = dish.split("</span>")[0].split(">")[1]
                 lines.append((html.unescape(name), curses.color_pair(1)|curses.A_BOLD))
 
-                ingr_list = dish.split("""<ul class="el-drm-menu-item-ingredients">""")[1].split("</ul>")[0]
-                ingredients = html.unescape(ingr_list[4:-5].replace("</li><li>", " | "))
+                ingr_list = dish.split("""<div class="lunch_desc">""")[1].split("</div>")[0]
+                ingredients = ingr_list.strip()
                 lines.append((ingredients, None))
             except IndexError:
                 pass
@@ -113,4 +113,4 @@ def run(stdscr):
             return
 
 
-curses.wrapper(run)
+curses.wrapper(run) 
