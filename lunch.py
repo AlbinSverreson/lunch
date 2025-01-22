@@ -74,8 +74,9 @@ class BrygganScraper(BaseScraper):
             dishes = day_menus[day].split('400;">')
             for dish in dishes[1:3]:
                 try:
-                    name = html.unescape(dish.split("</span>")[0])
-                    description = ""
+                    full_dish = html.unescape(dish.split("</span>")[0]).split(",")
+                    name = full_dish[0]
+                    description = ",".join(full_dish[1:])
                     self.day_dishes[day].append((name, description))
                 except IndexError:
                     pass
@@ -107,9 +108,14 @@ class EdisonScraper(BaseScraper):
             dishes = day_menus[day].split('<div class="lunchmeny_container">')
             for dish in dishes[1:]:
                 try:
-                    name = html.unescape(dish.split('lunch_title">')[1].split("<")[0])
-                    description = dish.split('<div class="lunch_desc">')[1]\
-                                      .split("</div>")[0].strip()
+                    category = html.unescape(dish.split('lunch_title">')[1]\
+                                                 .split("<")[0])\
+                                                 .split(",")[0]
+                    full_dish = dish.split('<div class="lunch_desc">')[1]\
+                                    .split("</div>")[0].strip()\
+                                    .split(",")
+                    name = category + " | " + full_dish[0]
+                    description = ",".join(full_dish[1:])
 
                     self.day_dishes[day].append((name, description))
                 except IndexError:
