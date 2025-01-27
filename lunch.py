@@ -203,7 +203,7 @@ def run(stdscr):
     curses.init_pair(1, curses.COLOR_GREEN, -1)
     curses.init_pair(2, curses.COLOR_YELLOW, -1)
 
-    selected_day = min(datetime.datetime.today().weekday(), 5)
+    selected_day = min(datetime.datetime.today().weekday(), 5)+1
 
     window = curses.newwin(curses.LINES, curses.COLS)
     window.keypad(1)
@@ -215,7 +215,7 @@ def run(stdscr):
         if week != datetime.datetime.today().isocalendar()[1]:
             for scraper in scrapers:
                 scraper.scrape()
-            selected_day = min(datetime.datetime.today().weekday(), 5)
+            selected_day = min(datetime.datetime.today().weekday(), 5)+1
             week = datetime.datetime.today().isocalendar()[1]
 
         scraper = scrapers[selected_scraper]
