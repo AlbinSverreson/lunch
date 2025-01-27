@@ -81,6 +81,46 @@ class BrygganScraper(BaseScraper):
                 except IndexError:
                     pass
 
+class BricksScraper(BaseScraper):
+    "Class for scraping the Bricks Eatery website"
+
+    url = "https://brickseatery.se/lunch/"
+    title = "[Bricks Eatery]"
+
+    def scrape(self):
+        self.day_titles = {}
+        self.day_dishes = {}
+
+        try:
+            self.site = requests.get(self.url, timeout=5).text
+        except requests.ConnectTimeout:
+            for day in WEEKDAYS:
+                self.day_titles[day] = "Bricks Eatery did not respond in time"
+                self.day_dishes[day] = [("","")*5]
+            return
+
+        day_menus = self.site.split("lunchmeny_wrapper")
+        for day in WEEKDAYS:
+            self.day_titles[day] = day_menus[day-1]\
+                                   .split('elementor-size-default">')[-1]\
+                                   .split("</h3>")[0]
+            self.day_dishes[day]=[]
+            dishes = day_menus[day].split('<div class="lunchmeny_container">')
+            for dish in dishes[1:]:
+                try:
+                    category = html.unescape(dish.split('lunch_title">')[1]\
+                                                 .split("<")[0])\
+                                                 .split(",")[0]
+                    full_dish = dish.split('<div class="lunch_desc">')[1]\
+                                    .split("</div>")[0].strip()\
+                                    .split(",")
+                    name = category + " | " + full_dish[0]
+                    description = ",".join(full_dish[1:])
+
+                    self.day_dishes[day].append((name, description))
+                except IndexError:
+                    pass
+
 class EdisonScraper(BaseScraper):
     "Class for scraping the Edison website"
 
