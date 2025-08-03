@@ -208,7 +208,7 @@ def display(title, lines, window):
         print_center("", None, window)
 
     for text, attr in lines:
-        print_center(text, attr, window)
+        print_center(strip(text), attr, window)
 
     for _ in range(int((curses.LINES-len(lines)-2)/2)):
         print_center("", None, window)
@@ -216,6 +216,13 @@ def display(title, lines, window):
     window.insstr(L_L+HORIZ*(curses.COLS-2)+L_R)
 
     window.refresh()
+
+def strip(text):
+    "Strips unwanted characters and html tags from a string"
+
+    text = re.sub("<[^<>]*>", "", text)
+    text = re.sub("[^\wåäö|&,. ]", "", text)
+    return text
 
 def print_center(text, attr, window):
     "Print some text styled with a curses attribute in the center of a curses window"
@@ -234,7 +241,7 @@ def print_center(text, attr, window):
 def run(stdscr):
     "Main curses function"
 
-    scrapers = [InspiraScraper(), EdisonScraper(), BrygganScraper()]
+    scrapers = [InspiraScraper(), EdisonScraper(), BrygganScraper(), BricksScraper()]
     selected_scraper = 0
 
     valid_keys = ["KEY_LEFT", "KEY_RIGHT", "KEY_UP", "KEY_DOWN", "q", "Q", "KEY_RESIZE"]
@@ -243,7 +250,7 @@ def run(stdscr):
     curses.init_pair(1, curses.COLOR_GREEN, -1)
     curses.init_pair(2, curses.COLOR_YELLOW, -1)
 
-    selected_day = min(datetime.datetime.today().weekday(), 5)+1
+    selected_day = min(datetime.datetime.today().weekday(), 5)
 
     window = curses.newwin(curses.LINES, curses.COLS)
     window.keypad(1)
